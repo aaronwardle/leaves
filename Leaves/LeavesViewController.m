@@ -13,6 +13,7 @@
 - (id)init {
     if (self = [super init]) {
 		leavesView = [[LeavesView alloc] initWithFrame:CGRectZero];
+        leavesView.mode = UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? LeavesViewModeSinglePage : LeavesViewModeFacingPages;
     }
     return self;
 }
@@ -22,6 +23,7 @@
     [super dealloc];
 }
 
+#pragma mark -
 #pragma mark LeavesViewDataSource methods
 
 - (NSUInteger) numberOfPagesInLeavesView:(LeavesView*)leavesView {
@@ -32,6 +34,7 @@
 	
 }
 
+#pragma mark -
 #pragma mark  UIViewController methods
 
 - (void)loadView {
@@ -46,6 +49,25 @@
 	leavesView.dataSource = self;
 	leavesView.delegate = self;
 	[leavesView reloadData];
+}
+
+
+#pragma mark -
+#pragma mark Interface rotation
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation 
+{
+    return YES;
+}
+
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
+        leavesView.mode = LeavesViewModeSinglePage;
+    } else {
+        leavesView.mode = LeavesViewModeFacingPages;
+    }
 }
 
 @end
