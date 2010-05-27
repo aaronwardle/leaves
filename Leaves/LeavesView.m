@@ -30,7 +30,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 	topPage.backgroundColor = [[UIColor whiteColor] CGColor];
 	
 	topPageOverlay = [[CALayer alloc] init];
-	topPageOverlay.backgroundColor = [[[UIColor blackColor] colorWithAlphaComponent:0.2] CGColor];
+	topPageOverlay.backgroundColor = [[[UIColor blackColor] colorWithAlphaComponent:0.0] CGColor];
 	
 	topPageShadow = [[CAGradientLayer alloc] init];
 	topPageShadow.colors = [NSArray arrayWithObjects:
@@ -46,10 +46,10 @@ CGFloat distance(CGPoint a, CGPoint b);
 	
 	topPageReverseImage = [[CALayer alloc] init];
 	topPageReverseImage.masksToBounds = YES;
-	topPageReverseImage.contentsGravity = kCAGravityRight;
+	topPageReverseImage.contentsGravity = kCAGravityLeft;
 	
 	topPageReverseOverlay = [[CALayer alloc] init];
-	topPageReverseOverlay.backgroundColor = [[[UIColor whiteColor] colorWithAlphaComponent:0.8] CGColor];
+	topPageReverseOverlay.backgroundColor = [[[UIColor whiteColor] colorWithAlphaComponent:0.0] CGColor];
 	
 	topPageReverseShading = [[CAGradientLayer alloc] init];
 	topPageReverseShading.colors = [NSArray arrayWithObjects:
@@ -130,9 +130,10 @@ CGFloat distance(CGPoint a, CGPoint b);
 		if (currentPageIndex > 0 && backgroundRendering)
 			[pageCache precacheImageForPageIndex:currentPageIndex-1];
 		topPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex];
-		topPageReverseImage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex];
-		if (currentPageIndex < numberOfPages - 1)
+		if (currentPageIndex < numberOfPages - 1) {
+            topPageReverseImage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex + 1];
 			bottomPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex + 1];
+        }
 		[pageCache minimizeToPageIndex:currentPageIndex];
 	} else {
 		topPage.contents = nil;
@@ -156,7 +157,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 									 40, 
 									 bottomPage.bounds.size.height);
 	topPageReverseImage.frame = topPageReverse.bounds;
-	topPageReverseImage.transform = CATransform3DMakeScale(-1, 1, 1);
+	//topPageReverseImage.transform = CATransform3DMakeScale(-1, 1, 1);
 	topPageReverseOverlay.frame = topPageReverse.bounds;
 	topPageReverseShading.frame = CGRectMake(topPageReverse.bounds.size.width - 50, 
 											 0, 
