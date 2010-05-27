@@ -7,30 +7,45 @@
 //
 
 #import "LeavesView.h"
+#import "LeavesCache.h"
+
+
+#pragma mark -
+#pragma mark Private interface
 
 @interface LeavesView () 
 
 @property (assign) CGFloat leafEdge;
 
+- (void)setUpLayers;
+- (void)setUpLayersForViewingMode;
+
 @end
 
 CGFloat distance(CGPoint a, CGPoint b);
 
+
+
+#pragma mark -
+#pragma mark Implementation
+
 @implementation LeavesView
 
 @synthesize delegate;
+@synthesize mode;
 @synthesize leafEdge, currentPageIndex, backgroundRendering;
+
 
 - (void) setUpLayers {
 	self.clipsToBounds = YES;
-	
+    
 	topPage = [[CALayer alloc] init];
 	topPage.masksToBounds = YES;
 	topPage.contentsGravity = kCAGravityLeft;
 	topPage.backgroundColor = [[UIColor whiteColor] CGColor];
 	
 	topPageOverlay = [[CALayer alloc] init];
-	topPageOverlay.backgroundColor = [[[UIColor blackColor] colorWithAlphaComponent:0.0] CGColor];
+	topPageOverlay.backgroundColor = [[[UIColor blackColor] colorWithAlphaComponent:0.2] CGColor];
 	
 	topPageShadow = [[CAGradientLayer alloc] init];
 	topPageShadow.colors = [NSArray arrayWithObjects:
@@ -46,10 +61,8 @@ CGFloat distance(CGPoint a, CGPoint b);
 	
 	topPageReverseImage = [[CALayer alloc] init];
 	topPageReverseImage.masksToBounds = YES;
-	topPageReverseImage.contentsGravity = kCAGravityLeft;
 	
 	topPageReverseOverlay = [[CALayer alloc] init];
-	topPageReverseOverlay.backgroundColor = [[[UIColor whiteColor] colorWithAlphaComponent:0.0] CGColor];
 	
 	topPageReverseShading = [[CAGradientLayer alloc] init];
 	topPageReverseShading.colors = [NSArray arrayWithObjects:
@@ -77,17 +90,58 @@ CGFloat distance(CGPoint a, CGPoint b);
 	[topPageReverse addSublayer:topPageReverseOverlay];
 	[topPageReverse addSublayer:topPageReverseShading];
 	[bottomPage addSublayer:bottomPageShadow];
+
+    // Setup for the left page in two-page mode
+    leftPage = [[CALayer alloc] init];
+	leftPage.masksToBounds = YES;
+	leftPage.contentsGravity = kCAGravityLeft;
+	leftPage.backgroundColor = [[UIColor whiteColor] CGColor];
+	
+	leftPageOverlay = [[CALayer alloc] init];
+	leftPageOverlay.backgroundColor = [[[UIColor blackColor] colorWithAlphaComponent:0.2] CGColor];
+		
+	[leftPage addSublayer:leftPageOverlay];
+    
+	[self.layer addSublayer:leftPage];
 	[self.layer addSublayer:bottomPage];
 	[self.layer addSublayer:topPage];
 	[self.layer addSublayer:topPageReverse];
+    
+    [self setUpLayersForViewingMode];
 	
 	self.leafEdge = 1.0;
 }
 
-- (void) initialize {
-	backgroundRendering = NO;
-	pageCache = [[LeavesCache alloc] initWithPageSize:self.bounds.size];
+
+- (void)setUpLayersForViewingMode {
+    if (self.mode == LeavesViewModeSinglePage) {
+        topPageReverseImage.contentsGravity = kCAGravityRight;
+        topPageReverseOverlay.backgroundColor = [[[UIColor whiteColor] colorWithAlphaComponent:0.8] CGColor];
+        topPageReverseImage.transform = CATransform3DMakeScale(-1, 1, 1);
+    } else {
+        topPageReverseImage.contentsGravity = kCAGravityLeft;
+        topPageReverseOverlay.backgroundColor = [[[UIColor whiteColor] colorWithAlphaComponent:0.0] CGColor];
+        topPageReverseImage.transform = CATransform3DMakeScale(1, 1, 1);
+    }
 }
+
+
+
+#pragma mark -
+#pragma mark Initialization and teardown
+
+- (void) initialize {
+	mode = LeavesViewModeSinglePage;
+    numberOfVisiblePages = 1;
+	backgroundRendering = NO;
+    
+    CGSize cachePageSize = self.bounds.size;
+    if (mode == LeavesViewModeFacingPages) {
+        cachePageSize = CGSizeMake(self.bounds.size.width / 2.0f, self.bounds.size.height);
+    }
+	pageCache = [[LeavesCache alloc] initWithPageSize:cachePageSize];
+}
+
 
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
@@ -97,11 +151,13 @@ CGFloat distance(CGPoint a, CGPoint b);
     return self;
 }
 
+
 - (void) awakeFromNib {
 	[super awakeFromNib];
 	[self setUpLayers];
 	[self initialize];
 }
+
 
 - (void)dealloc {
 	[topPage release];
@@ -113,11 +169,18 @@ CGFloat distance(CGPoint a, CGPoint b);
 	[topPageReverseShading release];
 	[bottomPage release];
 	[bottomPageShadow release];
-	
+    [leftPage release];
+	[leftPageOverlay release];
+    
 	[pageCache release];
 	
     [super dealloc];
 }
+
+
+
+#pragma mark -
+#pragma mark Image loading
 
 - (void) reloadData {
 	[pageCache flush];
@@ -125,49 +188,112 @@ CGFloat distance(CGPoint a, CGPoint b);
 	self.currentPageIndex = 0;
 }
 
+
 - (void) getImages {
-	if (currentPageIndex < numberOfPages) {
-		if (currentPageIndex > 0 && backgroundRendering)
-			[pageCache precacheImageForPageIndex:currentPageIndex-1];
-		topPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex];
-		if (currentPageIndex < numberOfPages - 1) {
-            topPageReverseImage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex + 1];
-			bottomPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex + 1];
+    if (self.mode == LeavesViewModeSinglePage) 
+    {
+        if (currentPageIndex < numberOfPages) {
+            if (currentPageIndex > 0 && backgroundRendering) {
+                [pageCache precacheImageForPageIndex:currentPageIndex-1];
+            }
+            topPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex];
+            leftPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex];
+            if (currentPageIndex < numberOfPages - 1) {
+                topPageReverseImage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex];
+                bottomPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex + 1];
+            }
+            [pageCache minimizeToPageIndex:currentPageIndex viewMode:self.mode];
+        } else {
+            topPage.contents = nil;
+            topPageReverseImage.contents = nil;
+            bottomPage.contents = nil;
+            
+            leftPage.contents = nil;
         }
-		[pageCache minimizeToPageIndex:currentPageIndex];
-	} else {
-		topPage.contents = nil;
-		topPageReverseImage.contents = nil;
-		bottomPage.contents = nil;
-	}
+    }
+    else
+    {
+        if (currentPageIndex <= numberOfPages) {
+            if (currentPageIndex > 1 && backgroundRendering) {
+                [pageCache precacheImageForPageIndex:currentPageIndex-2];
+            }
+            if (currentPageIndex > 2 && backgroundRendering) {
+                [pageCache precacheImageForPageIndex:currentPageIndex-2];
+            }
+            
+            topPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex];
+            if (currentPageIndex > 0) {
+                leftPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex-1];
+            } else {
+                leftPage.contents = nil;
+            }
+            
+            if (currentPageIndex < numberOfPages - 1) {
+                topPageReverseImage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex + 1];
+                bottomPage.contents = (id)[pageCache cachedImageForPageIndex:currentPageIndex + 2];
+            }
+            [pageCache minimizeToPageIndex:currentPageIndex viewMode:self.mode];
+        } else {
+            topPage.contents = nil;
+            topPageReverseImage.contents = nil;
+            bottomPage.contents = nil;
+            
+            leftPage.contents = nil;
+        }
+    }
 }
 
+
+
+#pragma mark -
+#pragma mark Layout
+
 - (void) setLayerFrames {
-	topPage.frame = CGRectMake(self.layer.bounds.origin.x, 
-							   self.layer.bounds.origin.y, 
-							   leafEdge * self.bounds.size.width, 
-							   self.layer.bounds.size.height);
-	topPageReverse.frame = CGRectMake(self.layer.bounds.origin.x + (2*leafEdge-1) * self.bounds.size.width, 
-									  self.layer.bounds.origin.y, 
-									  (1-leafEdge) * self.bounds.size.width, 
-									  self.layer.bounds.size.height);
-	bottomPage.frame = self.layer.bounds;
+    CGRect boundsRect = self.layer.bounds;
+    CGRect leftHalf, rightHalf;
+    if (self.mode == LeavesViewModeFacingPages) {
+        CGRectDivide(boundsRect, &leftHalf, &rightHalf, CGRectGetWidth(boundsRect) / 2.0f, CGRectMinXEdge);
+        boundsRect = rightHalf;
+    }
+    
+	topPage.frame = CGRectMake(boundsRect.origin.x, 
+							   boundsRect.origin.y, 
+							   leafEdge * boundsRect.size.width, 
+							   boundsRect.size.height);
+	topPageReverse.frame = CGRectMake(boundsRect.origin.x + (2*leafEdge-1) * boundsRect.size.width, 
+									  boundsRect.origin.y, 
+									  (1-leafEdge) * boundsRect.size.width, 
+									  boundsRect.size.height);
+	bottomPage.frame = boundsRect;
 	topPageShadow.frame = CGRectMake(topPageReverse.frame.origin.x - 40, 
 									 0, 
 									 40, 
 									 bottomPage.bounds.size.height);
 	topPageReverseImage.frame = topPageReverse.bounds;
-	//topPageReverseImage.transform = CATransform3DMakeScale(-1, 1, 1);
 	topPageReverseOverlay.frame = topPageReverse.bounds;
 	topPageReverseShading.frame = CGRectMake(topPageReverse.bounds.size.width - 50, 
 											 0, 
 											 50 + 1, 
 											 topPageReverse.bounds.size.height);
-	bottomPageShadow.frame = CGRectMake(leafEdge * self.bounds.size.width, 
+	bottomPageShadow.frame = CGRectMake(leafEdge * boundsRect.size.width, 
 										0, 
 										40, 
 										bottomPage.bounds.size.height);
 	topPageOverlay.frame = topPage.bounds;
+    
+    
+    
+    if (self.mode == LeavesViewModeSinglePage) {
+        leftPage.frame = CGRectZero;
+        leftPageOverlay.frame = leftPage.bounds;
+    } else {
+        leftPage.frame = CGRectMake(leftHalf.origin.x, 
+                                   leftHalf.origin.y, 
+                                   leftHalf.size.width, 
+                                   leftHalf.size.height);
+        leftPageOverlay.frame = leftPage.bounds;
+        
+    }
 }
 
 - (void) willTurnToPageAtIndex:(NSUInteger)index {
@@ -187,16 +313,21 @@ CGFloat distance(CGPoint a, CGPoint b);
 
 - (void) didTurnPageForward {
 	interactionLocked = NO;
-	self.currentPageIndex = self.currentPageIndex + 1;	
+	self.currentPageIndex = self.currentPageIndex + numberOfVisiblePages;	
 	[self didTurnToPageAtIndex:currentPageIndex];
 }
 
 - (BOOL) hasPrevPage {
-	return self.currentPageIndex > 0;
+    return self.currentPageIndex > (numberOfVisiblePages - 1);
 }
 
 - (BOOL) hasNextPage {
-	return self.currentPageIndex < numberOfPages - 1;
+	if (self.mode == LeavesViewModeSinglePage) {
+        return self.currentPageIndex < numberOfPages - 1;
+    } else {
+        return  ((self.currentPageIndex % 2 == 0) && (self.currentPageIndex < numberOfPages - 1)) ||
+                ((self.currentPageIndex % 2 != 0) && (self.currentPageIndex < numberOfPages - 2));
+    }
 }
 
 - (BOOL) touchedNextPage {
@@ -217,6 +348,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 	return MAX(28, self.bounds.size.width / 5);
 }
 
+#pragma mark -
 #pragma mark accessors
 
 - (id<LeavesViewDataSource>) dataSource {
@@ -229,14 +361,23 @@ CGFloat distance(CGPoint a, CGPoint b);
 
 - (void) setLeafEdge:(CGFloat)aLeafEdge {
 	leafEdge = aLeafEdge;
-	topPageShadow.opacity = MIN(1.0, 4*(1-leafEdge));
-	bottomPageShadow.opacity = MIN(1.0, 4*leafEdge);
-	topPageOverlay.opacity = MIN(1.0, 4*(1-leafEdge));
-	[self setLayerFrames];
+	
+    CGFloat pageOpacity = MIN(1.0, 4*(1-leafEdge));
+    
+    topPageShadow.opacity        = pageOpacity;
+	bottomPageShadow.opacity     = pageOpacity;
+	topPageOverlay.opacity       = pageOpacity;
+	leftPageOverlay.opacity   = pageOpacity;
+
+    [self setLayerFrames];
 }
 
+
 - (void) setCurrentPageIndex:(NSUInteger)aCurrentPageIndex {
-	currentPageIndex = aCurrentPageIndex;
+    currentPageIndex = aCurrentPageIndex;
+	if (self.mode == LeavesViewModeFacingPages && aCurrentPageIndex % 2 != 0) {
+        currentPageIndex = aCurrentPageIndex + 1;
+    }
 	
 	[CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue
@@ -249,6 +390,31 @@ CGFloat distance(CGPoint a, CGPoint b);
 	[CATransaction commit];
 }
 
+
+- (void) setMode:(LeavesViewMode)newMode
+{
+    mode = newMode;
+    
+    if (mode == LeavesViewModeSinglePage) {
+        numberOfVisiblePages = 1;
+        if (self.currentPageIndex > numberOfPages - 1) {
+            self.currentPageIndex = numberOfPages - 1;
+        }
+        
+    } else {
+        numberOfVisiblePages = 2;
+        if (self.currentPageIndex % 2 != 0) {
+            self.currentPageIndex++;
+        }
+    }
+
+    [self setUpLayersForViewingMode];
+    [self setNeedsLayout];
+}
+
+
+
+#pragma mark -
 #pragma mark UIView methods
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -262,8 +428,9 @@ CGFloat distance(CGPoint a, CGPoint b);
 		[CATransaction begin];
 		[CATransaction setValue:(id)kCFBooleanTrue
 						 forKey:kCATransactionDisableActions];
-		self.currentPageIndex = self.currentPageIndex - 1;
-		self.leafEdge = 0.0;
+
+        self.currentPageIndex = self.currentPageIndex - numberOfVisiblePages;
+        self.leafEdge = 0.0;
 		[CATransaction commit];
 		touchIsActive = YES;		
 	} 
@@ -300,7 +467,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 	[CATransaction begin];
 	float duration;
 	if ((dragged && self.leafEdge < 0.5) || (!dragged && [self touchedNextPage])) {
-		[self willTurnToPageAtIndex:currentPageIndex+1];
+        [self willTurnToPageAtIndex:currentPageIndex + numberOfVisiblePages];
 		self.leafEdge = 0;
 		duration = leafEdge;
 		interactionLocked = YES;
@@ -327,16 +494,21 @@ CGFloat distance(CGPoint a, CGPoint b);
 - (void) layoutSubviews {
 	[super layoutSubviews];
 	
-	
-	if (!CGSizeEqualToSize(pageSize, self.bounds.size)) {
-		pageSize = self.bounds.size;
+    
+	CGSize desiredPageSize = self.bounds.size;
+    if (self.mode == LeavesViewModeFacingPages) {
+        desiredPageSize = CGSizeMake(self.bounds.size.width/2.0f, self.bounds.size.height);
+    }
+    
+	if (!CGSizeEqualToSize(pageSize, desiredPageSize)) {
+		pageSize = desiredPageSize;
 		
 		[CATransaction begin];
 		[CATransaction setValue:(id)kCFBooleanTrue
 						 forKey:kCATransactionDisableActions];
 		[self setLayerFrames];
 		[CATransaction commit];
-		pageCache.pageSize = self.bounds.size;
+		pageCache.pageSize = pageSize;
 		[self getImages];
 		
 		CGFloat touchRectsWidth = self.bounds.size.width / 7;

@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "LeavesView.h"
+
 
 @protocol LeavesViewDataSource;
 
@@ -22,7 +24,7 @@
 - (id) initWithPageSize:(CGSize)aPageSize;
 - (CGImageRef) cachedImageForPageIndex:(NSUInteger)pageIndex;
 - (void) precacheImageForPageIndex:(NSUInteger)pageIndex;
-- (void) minimizeToPageIndex:(NSUInteger)pageIndex;
+- (void) minimizeToPageIndex:(NSUInteger)pageIndex viewMode:(LeavesViewMode)viewMode;
 - (void) flush;
 
 @end

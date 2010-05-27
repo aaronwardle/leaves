@@ -8,7 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
-#import "LeavesCache.h"
+
+
+typedef enum {
+    LeavesViewModeSinglePage,
+    LeavesViewModeFacingPages,
+} LeavesViewMode;
+
+
+
+@class LeavesCache;
 
 @protocol LeavesViewDataSource;
 @protocol LeavesViewDelegate;
@@ -25,10 +34,23 @@
 	
 	CALayer *bottomPage;
 	CAGradientLayer *bottomPageShadow;
-	
+
+    // The left page in two-page mode.
+    // Animation is always done on the right page
+    CALayer *leftPage;
+	CALayer *leftPageOverlay;
+    
+    // Single page or facing pages?
+    LeavesViewMode mode;
+    
 	CGFloat leafEdge;
+    
+    // In two-page mode, this is always the index of the right page.
+    // Pages with odd numbers (== pages where currentPageIndex is even) are always displayed 
+    // on the right side (as in a book)
 	NSUInteger currentPageIndex;
 	NSUInteger numberOfPages;
+    NSUInteger numberOfVisiblePages;
 	id<LeavesViewDelegate> delegate;
 	
 	CGSize pageSize;
@@ -43,6 +65,7 @@
 
 @property (assign) id<LeavesViewDataSource> dataSource;
 @property (assign) id<LeavesViewDelegate> delegate;
+@property (assign) LeavesViewMode mode;
 @property (readonly) CGFloat targetWidth;
 @property (assign) NSUInteger currentPageIndex;
 @property (assign) BOOL backgroundRendering;
