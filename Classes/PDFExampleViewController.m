@@ -25,12 +25,26 @@
     [super dealloc];
 }
 
+
 - (void) displayPageNumber:(NSUInteger)pageNumber {
-	self.navigationItem.title = [NSString stringWithFormat:
-								 @"Page %u of %u", 
-								 pageNumber, 
-								 CGPDFDocumentGetNumberOfPages(pdf)];
+    NSUInteger numberOfPages = CGPDFDocumentGetNumberOfPages(pdf);
+    NSString *pageNumberString = [NSString stringWithFormat:@"Page %u of %u", pageNumber, numberOfPages];
+    if (leavesView.mode == LeavesViewModeFacingPages) {
+        if (pageNumber > numberOfPages) {
+            pageNumberString = [NSString stringWithFormat:@"Page %u of %u", pageNumber-1, numberOfPages];
+        } else if (pageNumber > 1) {
+            pageNumberString = [NSString stringWithFormat:@"Pages %u-%u of %u", pageNumber - 1, pageNumber, numberOfPages];
+        }
+    }
+	self.navigationItem.title = pageNumberString;
 }
+
+- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self displayPageNumber:leavesView.currentPageIndex + 1];
+}
+
 
 #pragma mark  LeavesViewDelegate methods
 
