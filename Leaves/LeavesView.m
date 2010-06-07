@@ -249,22 +249,22 @@ CGFloat distance(CGPoint a, CGPoint b);
 #pragma mark Layout
 
 - (void) setLayerFrames {
-    CGRect boundsRect = self.layer.bounds;
+    CGRect rightPageBoundsRect = self.layer.bounds;
     CGRect leftHalf, rightHalf;
+    CGRectDivide(rightPageBoundsRect, &leftHalf, &rightHalf, CGRectGetWidth(rightPageBoundsRect) / 2.0f, CGRectMinXEdge);
     if (self.mode == LeavesViewModeFacingPages) {
-        CGRectDivide(boundsRect, &leftHalf, &rightHalf, CGRectGetWidth(boundsRect) / 2.0f, CGRectMinXEdge);
-        boundsRect = rightHalf;
+        rightPageBoundsRect = rightHalf;
     }
     
-	topPage.frame = CGRectMake(boundsRect.origin.x, 
-							   boundsRect.origin.y, 
-							   leafEdge * boundsRect.size.width, 
-							   boundsRect.size.height);
-	topPageReverse.frame = CGRectMake(boundsRect.origin.x + (2*leafEdge-1) * boundsRect.size.width, 
-									  boundsRect.origin.y, 
-									  (1-leafEdge) * boundsRect.size.width, 
-									  boundsRect.size.height);
-	bottomPage.frame = boundsRect;
+	topPage.frame = CGRectMake(rightPageBoundsRect.origin.x, 
+							   rightPageBoundsRect.origin.y, 
+							   leafEdge * rightPageBoundsRect.size.width, 
+							   rightPageBoundsRect.size.height);
+	topPageReverse.frame = CGRectMake(rightPageBoundsRect.origin.x + (2*leafEdge-1) * rightPageBoundsRect.size.width, 
+									  rightPageBoundsRect.origin.y, 
+									  (1-leafEdge) * rightPageBoundsRect.size.width, 
+									  rightPageBoundsRect.size.height);
+	bottomPage.frame = rightPageBoundsRect;
 	topPageShadow.frame = CGRectMake(topPageReverse.frame.origin.x - 40, 
 									 0, 
 									 40, 
@@ -275,7 +275,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 											 0, 
 											 50 + 1, 
 											 topPageReverse.bounds.size.height);
-	bottomPageShadow.frame = CGRectMake(leafEdge * boundsRect.size.width, 
+	bottomPageShadow.frame = CGRectMake(leafEdge * rightPageBoundsRect.size.width, 
 										0, 
 										40, 
 										bottomPage.bounds.size.height);
@@ -284,9 +284,11 @@ CGFloat distance(CGPoint a, CGPoint b);
     
     
     if (self.mode == LeavesViewModeSinglePage) {
-        leftPage.frame = CGRectZero;
-        leftPageOverlay.frame = leftPage.bounds;
+        leftPage.hidden = YES;
+        leftPageOverlay.hidden = leftPage.hidden;
     } else {
+        leftPage.hidden = NO;
+        leftPageOverlay.hidden = leftPage.hidden;
         leftPage.frame = CGRectMake(leftHalf.origin.x, 
                                    leftHalf.origin.y, 
                                    leftHalf.size.width, 
