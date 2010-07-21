@@ -84,7 +84,6 @@ CGFloat distance(CGPoint a, CGPoint b);
 	bottomPageShadow.startPoint = CGPointMake(0,0.5);
 	bottomPageShadow.endPoint = CGPointMake(1,0.5);
 	
-	[topPage addSublayer:topPageShadow];
 	[topPage addSublayer:topPageOverlay];
 	[topPageReverse addSublayer:topPageReverseImage];
 	[topPageReverse addSublayer:topPageReverseOverlay];
@@ -106,6 +105,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 	[self.layer addSublayer:bottomPage];
 	[self.layer addSublayer:topPage];
 	[self.layer addSublayer:topPageReverse];
+    [self.layer addSublayer:topPageShadow];
     
     [self setUpLayersForViewingMode];
 	
