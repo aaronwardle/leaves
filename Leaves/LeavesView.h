@@ -22,7 +22,7 @@ typedef enum {
 @protocol LeavesViewDataSource;
 @protocol LeavesViewDelegate;
 
-@interface LeavesView : UIView {
+@interface LeavesView : UIView <UIGestureRecognizerDelegate> {
 	CALayer *topPage;
 	CALayer *topPageOverlay;
 	CAGradientLayer *topPageShadow;
@@ -61,6 +61,18 @@ typedef enum {
 	BOOL touchIsActive;
 	CGRect nextPageRect, prevPageRect;
 	BOOL interactionLocked;
+	
+	// We need to know if ZOOM is active or not
+	BOOL zoomActive;
+	
+	// We also need to know if we can PAN/MOVE (of course only on ZOOM mode)
+	BOOL panActive;
+	
+	// Original transformation matrix
+	CGAffineTransform originalTransform;
+	
+	//TOFIX
+	UIPanGestureRecognizer *panGesture;
 }
 
 @property (assign) id<LeavesViewDataSource> dataSource;
@@ -88,6 +100,8 @@ typedef enum {
 
 - (void) leavesView:(LeavesView *)leavesView willTurnToPageAtIndex:(NSUInteger)pageIndex;
 - (void) leavesView:(LeavesView *)leavesView didTurnToPageAtIndex:(NSUInteger)pageIndex;
+- (void) leavesView:(LeavesView *)leavesView zoomingCurrentView:(NSUInteger)zoomLevel;
+- (void) leavesView:(LeavesView *)leavesView doubleTapCurrentView:(NSUInteger)fooVariable;
 
 @end
 

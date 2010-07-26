@@ -131,15 +131,35 @@ CGFloat distance(CGPoint a, CGPoint b);
 #pragma mark Initialization and teardown
 
 - (void) initialize {
+
+	panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panMove:)];
+	[panGesture setMaximumNumberOfTouches:2];
+	[panGesture setDelegate:self];
+
+	UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchZoom:)];
+    [pinchGesture setDelegate:self];
+    [self addGestureRecognizer:pinchGesture];
+    [pinchGesture release];
+	
+	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTap:)];
+    [tapGesture setNumberOfTapsRequired:2];
+	[tapGesture setDelegate:self];
+    [self addGestureRecognizer:tapGesture];
+    [tapGesture release];
 	mode = LeavesViewModeSinglePage;
     numberOfVisiblePages = 1;
 	backgroundRendering = NO;
     
+	// When app start zoom and PAN are not active, of course
+	zoomActive = NO;
+	panActive = NO;
+	
     CGSize cachePageSize = self.bounds.size;
     if (mode == LeavesViewModeFacingPages) {
         cachePageSize = CGSizeMake(self.bounds.size.width / 2.0f, self.bounds.size.height);
     }
 	pageCache = [[LeavesCache alloc] initWithPageSize:cachePageSize];
+	
 }
 
 
@@ -172,6 +192,8 @@ CGFloat distance(CGPoint a, CGPoint b);
     [leftPage release];
 	[leftPageOverlay release];
     
+	[panGesture release];
+	
 	[pageCache release];
 	
     [super dealloc];
@@ -243,6 +265,55 @@ CGFloat distance(CGPoint a, CGPoint b);
     }
 }
 
+#pragma mark -
+#pragma mark UIGestureRecognizer methods
+
+// This method will handle the PINCH / ZOOM gesture 
+- (void)pinchZoom:(UIPinchGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan || [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
+		
+		if (!zoomActive) {
+			zoomActive = YES;
+			originalTransform = [gestureRecognizer view].transform;
+			[self addGestureRecognizer:panGesture];
+			[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
+		}
+        [gestureRecognizer view].transform = CGAffineTransformScale([[gestureRecognizer view] transform], [gestureRecognizer scale], [gestureRecognizer scale]);
+		[gestureRecognizer setScale:1];
+    }
+}
+
+// This method will handle the double TAP gesture 
+- (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer
+{
+	
+	if (zoomActive) {
+        [gestureRecognizer view].transform = originalTransform;
+		
+		if (mode == LeavesViewModeFacingPages) 
+			[[gestureRecognizer view] setCenter:CGPointMake(512.0, 382.0)];
+		else 
+			[[gestureRecognizer view] setCenter:CGPointMake(382.0, 512.0)];
+				
+		zoomActive=NO;
+		panActive = NO;
+		
+		[self removeGestureRecognizer:panGesture];		
+		[delegate leavesView:self doubleTapCurrentView:nil];		
+		
+	}
+}
+
+// This method will handle the PAN / MOVE gesture 
+- (void)panMove:(UIPanGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan || [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
+        CGPoint translation = [gestureRecognizer translationInView:[[gestureRecognizer view] superview]];
+        [[gestureRecognizer view] setCenter:CGPointMake([[gestureRecognizer view] center].x + translation.x, [[gestureRecognizer view] center].y + translation.y)];
+        [gestureRecognizer setTranslation:CGPointZero inView:[[gestureRecognizer view] superview]];
+    }
+}
 
 
 #pragma mark -
@@ -306,6 +377,16 @@ CGFloat distance(CGPoint a, CGPoint b);
 - (void) didTurnToPageAtIndex:(NSUInteger)index {
 	if ([delegate respondsToSelector:@selector(leavesView:didTurnToPageAtIndex:)])
 		[delegate leavesView:self didTurnToPageAtIndex:index];
+}
+
+- (void) zoomingCurrentView:(NSUInteger)zoomLevel {
+	if ([delegate respondsToSelector:@selector(leavesView:zoomingCurrentView:)])
+		[delegate leavesView:self zoomingCurrentView:zoomLevel];
+}
+
+- (void) doubleTapCurrentView:(NSUInteger)zoomLevel {
+	if ([delegate respondsToSelector:@selector(leavesView:doubleTapCurrentView:)])
+		[delegate leavesView:self doubleTapCurrentView:nil];
 }
 
 - (void) didTurnPageBackward {

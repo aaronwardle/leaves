@@ -34,6 +34,14 @@
 	
 }
 
+- (void) leavesView:(LeavesView *)leavesView zoomingCurrentView:(NSUInteger)zoomLevel {
+	
+}
+
+- (void) leavesView:(LeavesView *)leavesView doubleTapCurrentView:(NSUInteger)zoomLevel {
+	
+}
+
 #pragma mark -
 #pragma mark  UIViewController methods
 
