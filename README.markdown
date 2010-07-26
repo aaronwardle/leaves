@@ -2,19 +2,19 @@
 
 Leaves is an simple way to present a page-turning interface similar to Apple's iBooks.  It comprises two classes, `LeavesView` and `LeavesViewController`, and occupies less than 100 kB compiled.  It uses only public APIs, sacrificing a portion of iBooks' visual flair to ensure that your application is safe for submission to the App Store.
 
-Leaves supports:
+This branch of Leaves supports:
 
 - Text, images, PDFs -- anything that can be rendered in a graphics context
 - Drag or tap to turn the page
-- iPad- and iPhone-sized display areas 
+- iPad--sized display areas 
+- Swipe gestures
+- Two-page landscape view
 
 Leaves does *not* currently support:
 
 - Interactive elements on the page
-- Swipe gestures
-- Two-page landscape view
 
-Leaves requires iPhone OS 3.0 or later.
+This branch of Leaves requires iPhone OS 3.2 or later (support for UIGestureRecognizer).
 
 #Installation
 

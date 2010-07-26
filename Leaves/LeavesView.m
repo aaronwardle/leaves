@@ -291,11 +291,8 @@ CGFloat distance(CGPoint a, CGPoint b);
 	if (zoomActive) {
         [gestureRecognizer view].transform = originalTransform;
 		
-		if (mode == LeavesViewModeFacingPages) 
-			[[gestureRecognizer view] setCenter:CGPointMake(512.0, 382.0)];
-		else 
-			[[gestureRecognizer view] setCenter:CGPointMake(382.0, 512.0)];
-				
+		[[gestureRecognizer view] setCenter:CGPointMake([gestureRecognizer view].frame.size.width / 2, [gestureRecognizer view].frame.size.height / 2)];
+
 		zoomActive=NO;
 		panActive = NO;
 		
