@@ -71,8 +71,6 @@ typedef enum {
 	// Original transformation matrix
 	CGAffineTransform originalTransform;
 	
-	//TOFIX
-	UIPanGestureRecognizer *panGesture;
 }
 
 @property (assign) id<LeavesViewDataSource> dataSource;

@@ -132,10 +132,6 @@ CGFloat distance(CGPoint a, CGPoint b);
 
 - (void) initialize {
 
-	panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panMove:)];
-	[panGesture setMaximumNumberOfTouches:2];
-	[panGesture setDelegate:self];
-
 	UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchZoom:)];
     [pinchGesture setDelegate:self];
     [self addGestureRecognizer:pinchGesture];
@@ -146,6 +142,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 	[tapGesture setDelegate:self];
     [self addGestureRecognizer:tapGesture];
     [tapGesture release];
+	
 	mode = LeavesViewModeSinglePage;
     numberOfVisiblePages = 1;
 	backgroundRendering = NO;
@@ -191,9 +188,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 	[bottomPageShadow release];
     [leftPage release];
 	[leftPageOverlay release];
-    
-	[panGesture release];
-	
+    	
 	[pageCache release];
 	
     [super dealloc];
@@ -276,7 +271,13 @@ CGFloat distance(CGPoint a, CGPoint b);
 		if (!zoomActive) {
 			zoomActive = YES;
 			originalTransform = [gestureRecognizer view].transform;
+			
+			UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panMove:)];
+			[panGesture setMaximumNumberOfTouches:2];
+			[panGesture setDelegate:self];
 			[self addGestureRecognizer:panGesture];
+			[panGesture release];
+			
 			[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
 		}
         [gestureRecognizer view].transform = CGAffineTransformScale([[gestureRecognizer view] transform], [gestureRecognizer scale], [gestureRecognizer scale]);
@@ -296,7 +297,15 @@ CGFloat distance(CGPoint a, CGPoint b);
 		zoomActive=NO;
 		panActive = NO;
 		
-		[self removeGestureRecognizer:panGesture];		
+		NSArray *registeredGestures = self.gestureRecognizers;
+		
+		for (UIGestureRecognizer *gesture in registeredGestures) {
+			if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] ) {
+				// Let remove the PAN / MOVE gesture recognizer
+				[self removeGestureRecognizer:gesture];
+			}
+		}
+		
 		[delegate leavesView:self doubleTapCurrentView:nil];		
 		
 	}
