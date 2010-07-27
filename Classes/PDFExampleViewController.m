@@ -52,6 +52,23 @@
 	[self displayPageNumber:pageIndex + 1];
 }
 
+
+- (void) leavesView:(LeavesView *)theView zoomingCurrentView:(NSUInteger)zoomLevel {
+	tiledLayer = [CATiledLayer layer];
+    tiledLayer.delegate = self;
+    tiledLayer.tileSize = theView.frame.size;
+    tiledLayer.levelsOfDetail = 100;
+    tiledLayer.levelsOfDetailBias = 200;
+    tiledLayer.frame = theView.frame;
+	tiledLayer.anchorPoint = CGPointMake(0.5f, 0.5f);
+	[theView.layer addSublayer:tiledLayer];
+}
+
+- (void) leavesView:(LeavesView *)theView doubleTapCurrentView:(NSUInteger)zoomLevel {	
+	[tiledLayer removeFromSuperlayer];
+	tiledLayer = nil;
+}
+
 #pragma mark LeavesViewDataSource methods
 
 - (NSUInteger) numberOfPagesInLeavesView:(LeavesView*)leavesView {
@@ -64,6 +81,20 @@
 											CGContextGetClipBoundingBox(ctx));
 	CGContextConcatCTM(ctx, transform);
 	CGContextDrawPDFPage(ctx, page);
+}
+
+
+#pragma mark Layer Support
+- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
+{
+    CGContextSetRGBFillColor(ctx, 1.0, 1.0, 1.0, 1.0);
+    CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
+    
+	CGContextTranslateCTM(ctx, 0.0, layer.bounds.size.height);
+    CGContextScaleCTM(ctx, 1.0, -1.0);
+	CGContextConcatCTM(ctx, CGPDFPageGetDrawingTransform(CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1), kCGPDFCropBox, layer.bounds, 0, true));
+    
+	CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1));	
 }
 
 #pragma mark UIViewController

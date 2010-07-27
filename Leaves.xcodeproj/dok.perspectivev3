@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ActivePerspectiveName</key>
-	<string>Project</string>
+	<string>Debug</string>
 	<key>AllowedModules</key>
 	<array>
 		<dict>
@@ -293,12 +293,13 @@
 							<array>
 								<string>29B97314FDCFA39411CA2CEA</string>
 								<string>D33D4E56117D818100BA7203</string>
+								<string>080E96DDFE201D6D7F000001</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>5</integer>
-									<integer>1</integer>
+									<integer>14</integer>
+									<integer>8</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -319,8 +320,6 @@
 							<string>MainColumn</string>
 							<real>185</real>
 						</array>
-						<key>RubberWindowFrame</key>
-						<string>0 113 1680 915 0 0 1680 1028 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -331,14 +330,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>EAB43E2911FDDFC3003AF043</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>LeavesView.m</string>
+								<string>PDFExampleViewController.m</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -346,15 +343,19 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>EAB43E2A11FDDFC3003AF043</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>LeavesView.m</string>
+										<string>PDFExampleViewController.m</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>EA488C0711FEBA2D00D0D8F0</string>
+										<string>EA2A011111FECF4A00BDAABB</string>
 										<key>history</key>
 										<array>
-											<string>EA488C0111FEBA0700D0D8F0</string>
-											<string>EA488C0511FEBA2A00D0D8F0</string>
+											<string>EA2A00D311FECE2500BDAABB</string>
+											<string>EA2A00D411FECE2500BDAABB</string>
+											<string>EA2A00D511FECE2500BDAABB</string>
+											<string>EA2A00EA11FECEB700BDAABB</string>
+											<string>EA2A00EB11FECEB700BDAABB</string>
+											<string>EA2A00FA11FECF1900BDAABB</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -368,18 +369,16 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1473, 666}}</string>
-								<key>RubberWindowFrame</key>
-								<string>0 113 1680 915 0 0 1680 1028 </string>
+								<string>{{0, 0}, {1473, 656}}</string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>666pt</string>
+							<string>656pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>203pt</string>
+							<string>213pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -393,7 +392,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1473, 176}}</string>
+										<string>{{10, 27}, {1473, 186}}</string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -447,9 +446,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1473, 176}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 113 1680 915 0 0 1680 1028 </string>
+										<string>{{10, 27}, {1473, 181}}</string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -477,11 +474,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>EA488BDE11FEB7DF00D0D8F0</string>
+				<string>EA2A010911FECF3E00BDAABB</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>EA488BDF11FEB7DF00D0D8F0</string>
+				<string>EA2A010A11FECF3E00BDAABB</string>
 				<string>EAB43E2911FDDFC3003AF043</string>
-				<string>EA488BE011FEB7DF00D0D8F0</string>
+				<string>EA2A010B11FECF3E00BDAABB</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -522,6 +519,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
@@ -533,6 +532,8 @@
 					<dict>
 						<key>Frame</key>
 						<string>{{0, 0}, {1680, 415}}</string>
+						<key>RubberWindowFrame</key>
+						<string>0 113 1680 915 0 0 1680 1028 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -607,7 +608,11 @@
 							</array>
 							<key>Frame</key>
 							<string>{{820, 0}, {860, 220}}</string>
+							<key>RubberWindowFrame</key>
+							<string>0 113 1680 915 0 0 1680 1028 </string>
 						</dict>
+						<key>RubberWindowFrame</key>
+						<string>0 113 1680 915 0 0 1680 1028 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -630,13 +635,13 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>EA488BE111FEB7DF00D0D8F0</string>
+				<string>EA2A010C11FECF3E00BDAABB</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>EA488BE211FEB7DF00D0D8F0</string>
-				<string>EA488BE311FEB7DF00D0D8F0</string>
-				<string>EA488BE411FEB7DF00D0D8F0</string>
-				<string>EA488BE511FEB7DF00D0D8F0</string>
+				<string>EA2A010D11FECF3E00BDAABB</string>
+				<string>EA2A010E11FECF3E00BDAABB</string>
+				<string>EA2A010F11FECF3E00BDAABB</string>
+				<string>EA2A011011FECF3E00BDAABB</string>
 				<string>EAB43E2911FDDFC3003AF043</string>
 			</array>
 			<key>ToolbarConfigUserDefaultsMinorVersion</key>
@@ -654,7 +659,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>301906477.90598899</real>
+	<real>301911882.75894701</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
