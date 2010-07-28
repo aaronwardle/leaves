@@ -13,7 +13,7 @@
 
 - (id)init {
     if (self = [super init]) {
-		CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("iphone_user_guide.pdf"), NULL, NULL);
+		CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("sample.pdf"), NULL, NULL);
 		pdf = CGPDFDocumentCreateWithURL((CFURLRef)pdfURL);
 		CFRelease(pdfURL);
     }
