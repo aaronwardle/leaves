@@ -13,7 +13,7 @@
 
 - (id)init {
     if (self = [super init]) {
-		CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("paper.pdf"), NULL, NULL);
+		CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("iphone_user_guide.pdf"), NULL, NULL);
 		pdf = CGPDFDocumentCreateWithURL((CFURLRef)pdfURL);
 		CFRelease(pdfURL);
     }
@@ -87,14 +87,38 @@
 #pragma mark Layer Support
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
 {
-    CGContextSetRGBFillColor(ctx, 1.0, 1.0, 1.0, 1.0);
-    CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
+	if (leavesView.mode == LeavesViewModeSinglePage) {
+		CGContextSetRGBFillColor(ctx, 1.0, 1.0, 1.0, 1.0);
+		CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
     
-	CGContextTranslateCTM(ctx, 0.0, layer.bounds.size.height);
-    CGContextScaleCTM(ctx, 1.0, -1.0);
-	CGContextConcatCTM(ctx, CGPDFPageGetDrawingTransform(CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1), kCGPDFCropBox, layer.bounds, 0, true));
+		CGContextTranslateCTM(ctx, 0.0, layer.bounds.size.height);
+		CGContextScaleCTM(ctx, 1.0, -1.0);
+		CGContextConcatCTM(ctx, CGPDFPageGetDrawingTransform(CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1), kCGPDFCropBox, layer.bounds, 0, true));
     
-	CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1));	
+		CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1));	
+	} else {
+		CGContextSetRGBFillColor(ctx, 1.0, 1.0, 1.0, 1.0);
+		CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
+		
+		CGContextTranslateCTM(ctx, 0.0, layer.bounds.size.height);
+		CGContextScaleCTM(ctx, 1.0, -1.0);
+		
+		// Drawing left page resized
+		CGRect leftPage = layer.bounds;
+		leftPage.size.width = layer.bounds.size.width / 2;
+		CGContextConcatCTM(ctx, CGPDFPageGetDrawingTransform(CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex), kCGPDFCropBox, leftPage, 0, true));
+		CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex));	
+
+		// Drawing right page resized
+		CGRect rightPage = layer.bounds;
+		rightPage.size.width = layer.bounds.size.width / 2;
+		rightPage.origin.x = layer.bounds.size.width / 2;
+		CGContextConcatCTM(ctx, CGPDFPageGetDrawingTransform(CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1), kCGPDFCropBox, rightPage, 0, true));
+		CGContextDrawPDFPage(ctx, CGPDFDocumentGetPage(pdf, leavesView.currentPageIndex+1));	
+		
+		
+	}
+
 }
 
 #pragma mark UIViewController
