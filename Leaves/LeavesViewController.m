@@ -78,4 +78,14 @@
     }
 }
 
+#pragma mark -
+#pragma mark View Interaction
+
+- (void) goToPage:(NSInteger)pageNumber {
+	// Remember that currentPageIndex start from 0!
+	if ([self numberOfPagesInLeavesView:leavesView] > 0)
+		leavesView.currentPageIndex = pageNumber;
+}
+
+
 @end

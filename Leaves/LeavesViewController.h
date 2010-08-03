@@ -13,5 +13,7 @@
 	LeavesView *leavesView;
 }
 
+- (void) goToPage:(NSInteger)pageNumber;
+
 @end
 
