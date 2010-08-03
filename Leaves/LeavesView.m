@@ -270,7 +270,6 @@ CGFloat distance(CGPoint a, CGPoint b);
 		
 		if (!zoomActive) {
 			zoomActive = YES;
-			originalTransform = [gestureRecognizer view].transform;
 			
 			UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panMove:)];
 			[panGesture setMaximumNumberOfTouches:2];
@@ -290,7 +289,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 {
 	
 	if (zoomActive) {
-        [gestureRecognizer view].transform = originalTransform;
+        [gestureRecognizer view].transform = CGAffineTransformIdentity;
 		
 		[[gestureRecognizer view] setCenter:CGPointMake([gestureRecognizer view].frame.size.width / 2, [gestureRecognizer view].frame.size.height / 2)];
 

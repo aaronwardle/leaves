@@ -67,10 +67,6 @@ typedef enum {
 	
 	// We also need to know if we can PAN/MOVE (of course only on ZOOM mode)
 	BOOL panActive;
-	
-	// Original transformation matrix
-	CGAffineTransform originalTransform;
-	
 }
 
 @property (assign) id<LeavesViewDataSource> dataSource;
