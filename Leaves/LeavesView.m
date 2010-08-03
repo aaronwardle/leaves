@@ -277,10 +277,15 @@ CGFloat distance(CGPoint a, CGPoint b);
 			[self addGestureRecognizer:panGesture];
 			[panGesture release];
 			
-			[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
 		}
-        [gestureRecognizer view].transform = CGAffineTransformScale([[gestureRecognizer view] transform], [gestureRecognizer scale], [gestureRecognizer scale]);
+       
+		[gestureRecognizer view].transform = CGAffineTransformScale([[gestureRecognizer view] transform], [gestureRecognizer scale], [gestureRecognizer scale]);
+
+		[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
+
 		[gestureRecognizer setScale:1];
+
+		
     }
 }
 
