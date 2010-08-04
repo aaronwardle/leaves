@@ -121,12 +121,35 @@
 
 }
 
+#pragma mark Page Moving Commands
+
+-(SEL)nextPage {
+	[self goToPage:leavesView.currentPageIndex+1];
+	[self displayPageNumber:leavesView.currentPageIndex+1];
+}
+
+-(SEL)previousPage {
+	[self goToPage:leavesView.currentPageIndex-1];
+	[self displayPageNumber:leavesView.currentPageIndex+1];
+}
+
+
 #pragma mark UIViewController
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
 	leavesView.backgroundRendering = YES;
 	[self displayPageNumber:1];
+
+	
+	UIBarButtonItem *previousPageButton = [[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStylePlain target:self action:@selector(previousPage)];
+	UIBarButtonItem *nextPageButton = [[UIBarButtonItem alloc] initWithTitle:@">" style:UIBarButtonItemStylePlain target:self action:@selector(nextPage)];
+	self.navigationItem.leftBarButtonItem = previousPageButton;
+	self.navigationItem.rightBarButtonItem = nextPageButton;
+	
+	[previousPageButton release];
+	[nextPageButton release];
+
 }
 
 @end

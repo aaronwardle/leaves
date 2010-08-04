@@ -83,7 +83,7 @@
 
 - (void) goToPage:(NSInteger)pageNumber {
 	// Remember that currentPageIndex start from 0!
-	if ([self numberOfPagesInLeavesView:leavesView] > 0)
+	if (pageNumber >= 0 && pageNumber < [self numberOfPagesInLeavesView:leavesView])
 		leavesView.currentPageIndex = pageNumber;
 }
 
