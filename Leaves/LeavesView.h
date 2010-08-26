@@ -76,9 +76,10 @@ typedef enum {
 @property (assign) NSUInteger currentPageIndex;
 @property (assign) BOOL backgroundRendering;
 
-- (void) reloadData;
+-(void) reloadData;
 -(void) adjustAnchorPointForGestureRecognizer:(UIPinchGestureRecognizer *)gestureRecognizer;
-
+-(void) doubleTap:(UIGestureRecognizer *)gestureRecognizer;
+-(void) doubleTap;
 @end
 
 

@@ -285,12 +285,13 @@ CGFloat distance(CGPoint a, CGPoint b);
 // This method will handle the PINCH / ZOOM gesture 
 - (void)pinchZoom:(UIPinchGestureRecognizer *)gestureRecognizer
 {
-
+	
 	[self adjustAnchorPointForGestureRecognizer:gestureRecognizer];//directing the zoom in the right direction
+	
     if ([gestureRecognizer state] == UIGestureRecognizerStateBegan || [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
 		
-		if (!zoomActive) {
-			zoomActive = YES;
+		if (zoomActive) {
+			
 			
 			UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panMove:)];
 			[panGesture setMaximumNumberOfTouches:2];
