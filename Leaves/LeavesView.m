@@ -285,12 +285,13 @@ CGFloat distance(CGPoint a, CGPoint b);
 // This method will handle the PINCH / ZOOM gesture 
 - (void)pinchZoom:(UIPinchGestureRecognizer *)gestureRecognizer
 {
-
+	
 	[self adjustAnchorPointForGestureRecognizer:gestureRecognizer];//directing the zoom in the right direction
+	
     if ([gestureRecognizer state] == UIGestureRecognizerStateBegan || [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
 		
-		if (!zoomActive) {
-			zoomActive = YES;
+		if (zoomActive) {
+			
 			
 			UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panMove:)];
 			[panGesture setMaximumNumberOfTouches:2];
@@ -299,41 +300,76 @@ CGFloat distance(CGPoint a, CGPoint b);
 			[panGesture release];
 			
 		}
-       
-		[gestureRecognizer view].transform = CGAffineTransformScale([[gestureRecognizer view] transform], [gestureRecognizer scale], [gestureRecognizer scale]);
-
-		[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
-
-		[gestureRecognizer setScale:1];
-
 		
-    }
-}
-
-// This method will handle the double TAP gesture 
-- (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer
-{
-	
-	if (zoomActive) {
-        [gestureRecognizer view].transform = CGAffineTransformIdentity;
 		
-		[[gestureRecognizer view] setCenter:CGPointMake([gestureRecognizer view].frame.size.width / 2, [gestureRecognizer view].frame.size.height / 2)];
-
-		zoomActive=NO;
-		panActive = NO;
-		
-		NSArray *registeredGestures = self.gestureRecognizers;
-		
-		for (UIGestureRecognizer *gesture in registeredGestures) {
-			if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] ) {
-				// Let remove the PAN / MOVE gesture recognizer
-				[self removeGestureRecognizer:gesture];
+		if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+			gestureRecognizer.scale = gestureRecognizer.view.transform.a;
+		} else {
+			CGFloat scale = MAX(gestureRecognizer.scale, 1.0f);// minimum zoom scale is 1:1
+			gestureRecognizer.view.transform = CGAffineTransformMakeScale(scale, scale);
+			if(scale==1.0) {
+				zoomActive=NO;
+				[self doubleTap:gestureRecognizer];
 			}
+			else zoomActive=YES;
 		}
 		
-		[delegate leavesView:self doubleTapCurrentView:nil];		
+		[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
+		
 		
 	}
+	
+	
+}
+
+
+// This method will handle the double TAP gesture and will reposition the view at 1:1 scale whether the user tries to zoom out too much
+- (void)doubleTap:(UIGestureRecognizer *)gestureRecognizer
+{
+	
+	
+	//restore center anchorpoint
+	self.layer.anchorPoint=CGPointMake(0.5, 0.5);
+	[gestureRecognizer view].transform = CGAffineTransformIdentity;
+	
+	[[gestureRecognizer view] setCenter:CGPointMake([gestureRecognizer view].frame.size.width / 2, [gestureRecognizer view].frame.size.height / 2)];
+	
+	zoomActive=NO;
+	panActive = NO;
+	
+	NSArray *registeredGestures = self.gestureRecognizers;
+	
+	for (UIGestureRecognizer *gesture in registeredGestures) {
+		if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] ) {
+			// Let remove the PAN / MOVE gesture recognizer
+			[self removeGestureRecognizer:gesture];
+		}
+	}
+	
+	[delegate leavesView:self doubleTapCurrentView:0];		
+	
+	
+}
+
+-(void) doubleTap{
+	
+	self.layer.anchorPoint=CGPointMake(0.5, 0.5);
+	self.transform = CGAffineTransformIdentity;
+	
+	zoomActive=NO;
+	panActive = NO;
+	
+	NSArray *registeredGestures = self.gestureRecognizers;
+	
+	for (UIGestureRecognizer *gesture in registeredGestures) {
+		if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] ) {
+			// Let remove the PAN / MOVE gesture recognizer
+			[self removeGestureRecognizer:gesture];
+		}
+	}
+	
+	[delegate leavesView:self doubleTapCurrentView:0];
+	
 }
 
 // This method will handle the PAN / MOVE gesture 
