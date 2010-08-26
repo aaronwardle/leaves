@@ -77,6 +77,7 @@ typedef enum {
 @property (assign) BOOL backgroundRendering;
 
 - (void) reloadData;
+-(void) adjustAnchorPointForGestureRecognizer:(UIPinchGestureRecognizer *)gestureRecognizer;
 
 @end
 

@@ -263,9 +263,30 @@ CGFloat distance(CGPoint a, CGPoint b);
 #pragma mark -
 #pragma mark UIGestureRecognizer methods
 
+
+//this method will adjust the anchor point of the gesture recognizer in order for it to zoom towards the direction chosen by the user
+- (void)adjustAnchorPointForGestureRecognizer:(UIPinchGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		
+        UIView *piece = gestureRecognizer.view;
+		
+		
+        CGPoint locationInView = [gestureRecognizer locationInView:piece];
+        CGPoint locationInSuperview = [gestureRecognizer locationInView:piece.superview];
+        
+        piece.layer.anchorPoint = CGPointMake(locationInView.x / piece.bounds.size.width, locationInView.y / piece.bounds.size.height);
+        piece.center = locationInSuperview;
+    }
+}
+
+
+
+
 // This method will handle the PINCH / ZOOM gesture 
 - (void)pinchZoom:(UIPinchGestureRecognizer *)gestureRecognizer
 {
+
+	[self adjustAnchorPointForGestureRecognizer:gestureRecognizer];//directing the zoom in the right direction
     if ([gestureRecognizer state] == UIGestureRecognizerStateBegan || [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
 		
 		if (!zoomActive) {
