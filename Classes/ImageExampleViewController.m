@@ -34,6 +34,7 @@
 }
 
 - (void) renderPageAtIndex:(NSUInteger)index inContext:(CGContextRef)ctx {
+	if(index>[images count]-1)return;
 	UIImage *image = [images objectAtIndex:index];
 	CGRect imageRect = CGRectMake(0, 0, image.size.width, image.size.height);
 	CGAffineTransform transform = aspectFit(imageRect,
