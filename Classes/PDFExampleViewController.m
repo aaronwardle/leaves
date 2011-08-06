@@ -54,6 +54,11 @@
 
 
 - (void) leavesView:(LeavesView *)theView zoomingCurrentView:(NSUInteger)zoomLevel {
+    
+    // Remove current Layer 
+    // This helps prevent the crash when zooming
+    [tiledLayer removeFromSuperlayer];
+    
 	tiledLayer = [CATiledLayer layer];
     tiledLayer.delegate = self;
     tiledLayer.tileSize = theView.frame.size;

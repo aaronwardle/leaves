@@ -207,7 +207,11 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Leaves" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -267,7 +271,7 @@
 				GCC_PREFIX_HEADER = Leaves_Prefix.pch;
 				INFOPLIST_FILE = "Leaves-Info.plist";
 				PRODUCT_NAME = Leaves;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -282,7 +286,7 @@
 				GCC_PREFIX_HEADER = Leaves_Prefix.pch;
 				INFOPLIST_FILE = "Leaves-Info.plist";
 				PRODUCT_NAME = Leaves;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
