@@ -131,16 +131,6 @@
 #pragma mark Page Moving Commands
 
 -(SEL)homeButton {
-   // LeavesAppDelegate *myDelegate = [[UIApplication sharedApplication] delegate];
-  //  ExamplesViewController *del = [[UIApplication sharedApplication] delegate];
-    
-
-//	[self goToPage:leavesView.currentPageIndex+1];
-//	[self displayPageNumber:leavesView.currentPageIndex+1];
-   // OrbitReaderAppDelegate *myDelegate = [[UIApplication sharedApplication]delegate];
-	//[[myDelegate.navigationController.viewControllers objectAtIndex:0]viewWillAppear:YES];
-	//[self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:([self.navigationController.viewControllers count] -2)] animated:YES];	
-	//[myDelegate.navigationController popToRootViewControllerAnimated:YES];
     [self.navigationController popToRootViewControllerAnimated:YES];
     return 0;
     
@@ -149,11 +139,13 @@
 -(SEL)nextPage {
 	[self goToPage:leavesView.currentPageIndex+1];
 	[self displayPageNumber:leavesView.currentPageIndex+1];
+    return 0;
 }
 
 -(SEL)previousPage {
 	[self goToPage:leavesView.currentPageIndex-1];
 	[self displayPageNumber:leavesView.currentPageIndex+1];
+    return 0;
 }
 
 
