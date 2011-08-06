@@ -67,6 +67,9 @@ typedef enum {
 	
 	// We also need to know if we can PAN/MOVE (of course only on ZOOM mode)
 	BOOL panActive;
+    
+    // Used to record last scale
+    CGFloat lastScale;
 }
 
 @property (assign) id<LeavesViewDataSource> dataSource;

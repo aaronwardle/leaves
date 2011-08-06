@@ -8,6 +8,8 @@
 
 #import "PDFExampleViewController.h"
 #import "Utilities.h"
+#import "LeavesAppDelegate.h"
+#import "ExamplesViewController.h"
 
 @implementation PDFExampleViewController
 
@@ -62,8 +64,8 @@
 	tiledLayer = [CATiledLayer layer];
     tiledLayer.delegate = self;
     tiledLayer.tileSize = theView.frame.size;
-    tiledLayer.levelsOfDetail = 100;
-    tiledLayer.levelsOfDetailBias = 200;
+    tiledLayer.levelsOfDetail = 4;  // 100
+    tiledLayer.levelsOfDetailBias = 4; // 200
     tiledLayer.frame = theView.frame;
 	tiledLayer.anchorPoint = CGPointMake(0.5f, 0.5f);
 	[theView.layer addSublayer:tiledLayer];
@@ -128,6 +130,22 @@
 
 #pragma mark Page Moving Commands
 
+-(SEL)homeButton {
+   // LeavesAppDelegate *myDelegate = [[UIApplication sharedApplication] delegate];
+  //  ExamplesViewController *del = [[UIApplication sharedApplication] delegate];
+    
+
+//	[self goToPage:leavesView.currentPageIndex+1];
+//	[self displayPageNumber:leavesView.currentPageIndex+1];
+   // OrbitReaderAppDelegate *myDelegate = [[UIApplication sharedApplication]delegate];
+	//[[myDelegate.navigationController.viewControllers objectAtIndex:0]viewWillAppear:YES];
+	//[self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:([self.navigationController.viewControllers count] -2)] animated:YES];	
+	//[myDelegate.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    return 0;
+    
+}
+
 -(SEL)nextPage {
 	[self goToPage:leavesView.currentPageIndex+1];
 	[self displayPageNumber:leavesView.currentPageIndex+1];
@@ -146,13 +164,41 @@
 	leavesView.backgroundRendering = YES;
 	[self displayPageNumber:1];
 
-	
-	UIBarButtonItem *previousPageButton = [[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStylePlain target:self action:@selector(previousPage)];
+	// Added a home button to this view
+    UIBarButtonItem *homeButton = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:self action:@selector(homeButton)];
+    
+    // create a spacer between the buttons
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
+                               initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                               target:nil
+                               action:nil];
+    spacer.width = 5.0;
+    
+	UIBarButtonItem *previousPageButton = [[[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStyleBordered target:self action:@selector(previousPage)] autorelease];
+    
 	UIBarButtonItem *nextPageButton = [[UIBarButtonItem alloc] initWithTitle:@">" style:UIBarButtonItemStylePlain target:self action:@selector(nextPage)];
-	self.navigationItem.leftBarButtonItem = previousPageButton;
+    
+    
+    // create a toolbar where we can place some buttons
+    UIToolbar* toolbar = [[[UIToolbar alloc]
+						  initWithFrame:CGRectMake(0, 0, 250, 44)] autorelease];
+   [toolbar setBarStyle: UIBarStyleDefault];
+        
+    // create an array for the buttons
+    NSMutableArray *buttons = [[NSMutableArray alloc] initWithCapacity:3];
+    [buttons addObject:homeButton];
+    [buttons addObject:spacer];
+    [buttons addObject:previousPageButton];
+    
+    [toolbar setItems:buttons animated:NO];
+    [buttons release];
+    
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+                                              initWithCustomView:toolbar]; 
+        
 	self.navigationItem.rightBarButtonItem = nextPageButton;
 	
-	[previousPageButton release];
+    [homeButton release];
 	[nextPageButton release];
 
 }
