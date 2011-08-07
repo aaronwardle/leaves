@@ -14,8 +14,11 @@
 @implementation PDFExampleViewController
 
 - (id)init {
-    if (self = [super init]) {
-		CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("sample.pdf"), NULL, NULL);
+  //  if (self = [super init]) {
+    self = [super init];
+ 	
+    if (self != nil) {
+        CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("sample.pdf"), NULL, NULL);
 		pdf = CGPDFDocumentCreateWithURL((CFURLRef)pdfURL);
 		CFRelease(pdfURL);
     }
@@ -69,6 +72,8 @@
     tiledLayer.frame = theView.frame;
 	tiledLayer.anchorPoint = CGPointMake(0.5f, 0.5f);
 	[theView.layer addSublayer:tiledLayer];
+    
+    
 }
 
 - (void) leavesView:(LeavesView *)theView doubleTapCurrentView:(NSUInteger)zoomLevel {	
@@ -153,11 +158,25 @@
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
+    
 	leavesView.backgroundRendering = YES;
 	[self displayPageNumber:1];
-
-	// Added a home button to this view
+    
+	
+    // create a toolbar where we can place some buttons
+    UIToolbar* toolbar = [[[UIToolbar alloc]
+						  initWithFrame:CGRectMake(0, 0, 250, 44)] autorelease];
+   [toolbar setBarStyle: UIBarStyleDefault];
+        
+    // create an array for the buttons
+    NSMutableArray *buttons = [[NSMutableArray alloc] initWithCapacity:3];
+    
+    // Added a home button to this view
     UIBarButtonItem *homeButton = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:self action:@selector(homeButton)];
+    
+    // Add home button to toolbar
+    [buttons addObject:homeButton];
+    [homeButton release];   // Release home button
     
     // create a spacer between the buttons
     UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
@@ -166,31 +185,27 @@
                                action:nil];
     spacer.width = 5.0;
     
-	UIBarButtonItem *previousPageButton = [[[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStyleBordered target:self action:@selector(previousPage)] autorelease];
-    
-	UIBarButtonItem *nextPageButton = [[UIBarButtonItem alloc] initWithTitle:@">" style:UIBarButtonItemStylePlain target:self action:@selector(nextPage)];
-    
-    
-    // create a toolbar where we can place some buttons
-    UIToolbar* toolbar = [[[UIToolbar alloc]
-						  initWithFrame:CGRectMake(0, 0, 250, 44)] autorelease];
-   [toolbar setBarStyle: UIBarStyleDefault];
-        
-    // create an array for the buttons
-    NSMutableArray *buttons = [[NSMutableArray alloc] initWithCapacity:3];
-    [buttons addObject:homeButton];
+    // Add the spacer to the toolbar
     [buttons addObject:spacer];
+    [spacer release]; // Release spacer
+    
+    UIBarButtonItem *previousPageButton = [[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStyleBordered target:self action:@selector(previousPage)];
+    
     [buttons addObject:previousPageButton];
+    [previousPageButton release];
     
     [toolbar setItems:buttons animated:NO];
     [buttons release];
     
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-                                              initWithCustomView:toolbar]; 
-        
+	self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc]
+                                              initWithCustomView:toolbar] autorelease]; 
+    
+
+    
+    UIBarButtonItem *nextPageButton = [[UIBarButtonItem alloc] initWithTitle:@">" style:UIBarButtonItemStylePlain target:self action:@selector(nextPage)];
+    
 	self.navigationItem.rightBarButtonItem = nextPageButton;
 	
-    [homeButton release];
 	[nextPageButton release];
 
 }

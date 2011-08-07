@@ -293,19 +293,21 @@ CGFloat distance(CGPoint a, CGPoint b);
     }
 
     
-	
-    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan || [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
+	if (zoomActive == NO) {
+        NSLog(@"Zoom not active");
+//    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan || [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
+    if ([gestureRecognizer state] == UIGestureRecognizerStateChanged) {
         [self adjustAnchorPointForGestureRecognizer:gestureRecognizer];//directing the zoom in the right direction
         
         zoomActive = YES;
-//        if (zoomActive) {
+        if (zoomActive) {
 			UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panMove:)];
 			[panGesture setMaximumNumberOfTouches:2];
 			[panGesture setDelegate:self];
 			[self addGestureRecognizer:panGesture];
 			[panGesture release];
 			
-//		}
+		}
 		
 		// Get the current scale
       /*
@@ -362,7 +364,7 @@ CGFloat distance(CGPoint a, CGPoint b);
         CGFloat currentScale = [[[gestureRecognizer view].layer valueForKeyPath:@"transform.scale"] floatValue];
         
         // Constants to adjust the max/min values of zoom
-        const CGFloat kMaxScale = 2.0;
+        const CGFloat kMaxScale = 3.0;
         const CGFloat kMinScale = 1.0;
         
         CGFloat newScale = 1 -  (lastScale - [gestureRecognizer scale]); 
@@ -372,13 +374,25 @@ CGFloat distance(CGPoint a, CGPoint b);
         [gestureRecognizer view].transform = transform;
         
 		//[gestureRecognizer view].transform = CGAffineTransformScale([[gestureRecognizer view] transform], [gestureRecognizer scale], [gestureRecognizer scale]);
+        NSLog(@"Scale = %.4f", newScale);
+      //  if(newScale <= 1) {
+      //      NSLog(@"New Scale = 1.0");
+     //       zoomActive=NO;
+     //       [self doubleTap:gestureRecognizer];
+     //   } else {
+           
+         [delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];	    	
+         zoomActive=NO;
+        //}
         
-		[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
+       	
         
 		//[gestureRecognizer setScale:1];
         lastScale = [gestureRecognizer scale]; 
 	}	
-		
+    } else {
+        NSLog(@"Zoom already active");
+    }
 	//}
 	
 	
@@ -515,12 +529,18 @@ CGFloat distance(CGPoint a, CGPoint b);
 
 - (void) doubleTapCurrentView:(NSUInteger)zoomLevel {
 	if ([delegate respondsToSelector:@selector(leavesView:doubleTapCurrentView:)])
-		[delegate leavesView:self doubleTapCurrentView:nil];
+	//	[delegate leavesView:self doubleTapCurrentView:nil];
+	[delegate leavesView:self doubleTapCurrentView:0];
 }
 
 - (void) didTurnPageBackward {
 	interactionLocked = NO;
 	[self didTurnToPageAtIndex:currentPageIndex];
+}
+
+- (CGFloat)leafEdge
+{
+    return leafEdge;
 }
 
 - (void) didTurnPageForward {
@@ -603,6 +623,12 @@ CGFloat distance(CGPoint a, CGPoint b);
 }
 
 
+- (NSUInteger)currentPageIndex
+{
+    return currentPageIndex;
+}
+
+
 - (void) setMode:(LeavesViewMode)newMode
 {
     mode = newMode;
@@ -625,6 +651,10 @@ CGFloat distance(CGPoint a, CGPoint b);
 }
 
 
+- (LeavesViewMode)mode
+{
+ 	return mode;
+}
 
 #pragma mark -
 #pragma mark UIView methods

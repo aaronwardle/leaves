@@ -106,4 +106,8 @@
 	[self flush];
 }
 
+- (CGSize)pageSize {
+    return pageSize;
+}
+
 @end
