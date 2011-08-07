@@ -308,59 +308,7 @@ CGFloat distance(CGPoint a, CGPoint b);
 			[panGesture release];
 			
 		}
-		
-		// Get the current scale
-      /*
-        CGFloat currentScale = [[[gestureRecognizer view].layer valueForKeyPath:@"transform.scale"] floatValue];
-        
-        // Constants to adjust the max/min values of zoom
-        const CGFloat kMaxScale = 1.5;
-        const CGFloat kMinScale = 1.0;
-        
-        CGFloat newScale = 1 -  (lastScale - [gestureRecognizer scale]); 
-        newScale = MIN(newScale, kMaxScale / currentScale);   
-        newScale = MAX(newScale, kMinScale / currentScale);
-        CGAffineTransform transform = CGAffineTransformScale([[gestureRecognizer view] transform], newScale, newScale);
-        [gestureRecognizer view].transform = transform;
-        
-		//[gestureRecognizer view].transform = CGAffineTransformScale([[gestureRecognizer view] transform], [gestureRecognizer scale], [gestureRecognizer scale]);
-        
-		[delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];			
-        
-		//[gestureRecognizer setScale:1];
-        lastScale = [gestureRecognizer scale]; 
-*/
-        
-		//if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-			//gestureRecognizer.scale = gestureRecognizer.view.transform.a;
-		//} else {
-			//CGFloat scale = MIN(gestureRecognizer.scale, 1.0f);// minimum zoom scale is 1:1
-            // Constants to adjust the max/min values of zoom
-     /*
-        CGFloat currentScale = gestureRecognizer.view.transform.a;// [[[gestureRecognizer view].transform. valueForKeyPath:@"transform.scale"] floatValue];
-            
-            const CGFloat kMaxScale = 2.0;
-            const CGFloat kMinScale = 1.0;
-            
-            CGFloat newScale = 1 -  (lastScale - [gestureRecognizer scale]); 
-            newScale = MIN(newScale, kMaxScale / currentScale);   
-            newScale = MAX(newScale, kMinScale / currentScale);
-            
-			gestureRecognizer.view.transform = CGAffineTransformMakeScale(newScale, newScale);
-			//if(newScale==1.0) {
-              //  NSLog(@"New Scale = 1.0");
-				//zoomActive=NO;
-				[self doubleTap:gestureRecognizer];
-		//	}
-		//	else zoomActive=YES;
-        
-        
-        [delegate leavesView:self zoomingCurrentView:[gestureRecognizer scale]];
-        
-		}
-		
-					*/
-        
+	
         CGFloat currentScale = [[[gestureRecognizer view].layer valueForKeyPath:@"transform.scale"] floatValue];
         
         // Constants to adjust the max/min values of zoom

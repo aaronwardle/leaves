@@ -10,7 +10,8 @@
 
 @interface PDFExampleViewController : LeavesViewController {
 	CGPDFDocumentRef pdf;
-	CATiledLayer *tiledLayer;
+    
+    CATiledLayer *tiledLayer;
 }
 
 @end

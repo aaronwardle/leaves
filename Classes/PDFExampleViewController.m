@@ -18,7 +18,7 @@
     self = [super init];
  	
     if (self != nil) {
-        CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("sample.pdf"), NULL, NULL);
+        CFURLRef pdfURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("orbit.pdf"), NULL, NULL);
 		pdf = CGPDFDocumentCreateWithURL((CFURLRef)pdfURL);
 		CFRelease(pdfURL);
     }
@@ -27,6 +27,11 @@
 
 - (void)dealloc {
 	CGPDFDocumentRelease(pdf);
+    
+    tiledLayer.contents = nil;
+    tiledLayer.delegate=nil;
+    [tiledLayer removeFromSuperlayer];
+    
     [super dealloc];
 }
 
@@ -60,24 +65,29 @@
 
 - (void) leavesView:(LeavesView *)theView zoomingCurrentView:(NSUInteger)zoomLevel {
     
-    // Remove current Layer 
-    // This helps prevent the crash when zooming
-    [tiledLayer removeFromSuperlayer];
-    
-	tiledLayer = [CATiledLayer layer];
-    tiledLayer.delegate = self;
-    tiledLayer.tileSize = theView.frame.size;
-    tiledLayer.levelsOfDetail = 4;  // 100
-    tiledLayer.levelsOfDetailBias = 4; // 200
-    tiledLayer.frame = theView.frame;
-	tiledLayer.anchorPoint = CGPointMake(0.5f, 0.5f);
-	[theView.layer addSublayer:tiledLayer];
-    
-    
+    // Checking to see if a tiledLayer exists
+    if (tiledLayer == nil) {
+        // Tiled Layer is nill 
+        NSLog(@"**** tiledLayer does not exist we shoudl create one");
+        tiledLayer = [CATiledLayer layer];
+        tiledLayer.delegate = self;
+        tiledLayer.tileSize = theView.frame.size;
+        tiledLayer.levelsOfDetail = 4;  // 100
+        tiledLayer.levelsOfDetailBias = 4; // 200
+        tiledLayer.frame = theView.frame;
+        tiledLayer.anchorPoint = CGPointMake(0.5f, 0.5f);
+
+        [theView.layer addSublayer:tiledLayer];
+    } else {
+        // tiledLayer exists so skip
+        // Perhaps move this to start of method and if exists remove then recreate?
+        NSLog(@"Current have a tiled layer");
+    }
 }
 
 - (void) leavesView:(LeavesView *)theView doubleTapCurrentView:(NSUInteger)zoomLevel {	
 	[tiledLayer removeFromSuperlayer];
+    tiledLayer.delegate = nil;              // Disconnect from Delegate aswell. 
 	tiledLayer = nil;
 }
 
